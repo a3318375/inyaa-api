@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.inyaa.category.dao.CategoryDao">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.inyaa.category.domain.po.Category">
+        <id column="id" property="id"/>
+        <result column="name" property="name"/>
+        <result column="sort" property="sort"/>
+        <result column="create_time" property="createTime"/>
+        <result column="update_time" property="updateTime"/>
+    </resultMap>
+
+    <sql id="BASE_SQL">id,name,sort,create_time, create_by, update_time, update_by</sql>
+
+    <select id="selectCategoryPostsTotal" resultType="com.inyaa.category.domain.vo.CategoryVO">
+       SELECT
+        categoryTags.category_id id,
+        COUNT(*) total
+        FROM
+        hello_blog_category_tags categoryTags
+        LEFT JOIN hello_blog_posts_tags postsTags ON postsTags.tags_id = categoryTags.tags_id
+        WHERE
+        postsTags.posts_id IS NOT NULL
+        GROUP BY categoryTags.category_id
+    </select>
+    <select id="selectStatistics" resultType="com.inyaa.category.domain.vo.CategoryVO">
+        SELECT
+           id,(SELECT COUNT( 1 ) FROM hello_blog_posts WHERE category_id = category.id AND status=2) as total, name
+        FROM
+            hello_blog_category AS category
+    </select>
+    <select id="selectListPage" resultType="com.inyaa.category.domain.po.Category">
+        SELECT <include refid="BASE_SQL"/>
+        FROM hello_blog_category
+        <where>
+            <if test="condition.keywords != null and condition.keywords != ''">
+                AND name like #{condition.name}
+            </if>
+            <if test="condition.name != null and condition.name != ''">
+                AND name = #{condition.name}
+            </if>
+        </where>
+        ORDER BY id DESC
+    </select>
+</mapper>

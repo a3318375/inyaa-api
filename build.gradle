@@ -15,7 +15,7 @@ configurations {
 }
 
 repositories {
-    mavenCentral()
+    maven { url 'http://maven.aliyun.com/nexus/content/groups/public/' }
 }
 
 dependencies {
@@ -24,7 +24,21 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-web'
     implementation 'org.springframework.boot:spring-boot-starter-security'
     implementation 'org.springframework.security.oauth.boot:spring-security-oauth2-autoconfigure:2.2.6.RELEASE'
-    implementation 'org.mybatis.spring.boot:mybatis-spring-boot-starter:2.1.2'
+    implementation 'com.baomidou:mybatis-plus-boot-starter:3.2.0'
+    implementation 'com.alibaba:fastjson:1.2.68'
+    implementation 'org.fusesource:sigar:1.6.4'
+    implementation 'com.byteblogs:byteblogs-data-boot-starter:0.0.4-RELEASE'
+
+    implementation 'com.qiniu:qiniu-java-sdk:7.2.15'
+    implementation 'com.aliyun.oss:aliyun-sdk-oss:3.8.0'
+    implementation 'com.qcloud:cos_api:5.6.8'
+    implementation 'com.vladsch.flexmark:flexmark:0.26.4'
+    implementation 'com.vladsch.flexmark:flexmark-util:0.26.4'
+    implementation 'com.vladsch.flexmark:flexmark-ext-tables:0.26.4'
+    implementation 'org.jsoup:jsoup:1.9.2'
+
+    implementation 'org.apache.commons:commons-lang3'
+    implementation 'cn.hutool:hutool-all:4.6.4'
     compileOnly 'org.projectlombok:lombok'
     runtimeOnly 'mysql:mysql-connector-java'
     annotationProcessor 'org.projectlombok:lombok'

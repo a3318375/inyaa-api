@@ -1,0 +1,154 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.inyaa.posts.dao.PostsDao">
+
+    <sql id="BASE_SQL">
+      	id,author_id as authorId,title,thumbnail,comments, is_comment as isComment, sync_status as syncStatus,status,summary,views,weight,category_id as categoryId,create_time as createTime,update_time as updateTime
+   </sql>
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.inyaa.posts.domain.po.Posts">
+        <id column="id" property="id"/>
+        <result column="title" property="title"/>
+        <result column="thumbnail" property="thumbnail"/>
+        <result column="comments" property="comments"/>
+        <result column="status" property="status"/>
+        <result column="summary" property="summary"/>
+        <result column="views" property="views"/>
+        <result column="author_id" property="authorId"/>
+        <result column="sync_status" property="syncStatus"/>
+        <result column="category_id" property="categoryId"/>
+        <result column="is_comment" property="isComment"/>
+        <result column="weight" property="weight"/>
+        <result column="create_time" property="createTime"/>
+        <result column="update_time" property="updateTime"/>
+    </resultMap>
+
+    <select id="selectPostsList" resultType="com.inyaa.posts.domain.vo.PostsVO">
+        SELECT
+        DISTINCT(posts.id),
+        posts.title,
+        posts.status,
+        posts.summary,
+        posts.thumbnail,
+        posts.sync_status syncStatus,
+        users.name author,
+        posts.views,
+        posts.comments,
+        posts.category_id as categoryId,
+        category.name as categoryName,
+        posts.weight,
+        posts.create_time createTime
+        FROM
+        hello_blog_posts posts
+        LEFT JOIN hello_blog_auth_user users ON users.id = posts.author_id
+        LEFT JOIN hello_blog_posts_tags postsTags ON postsTags.posts_id = posts.id
+        LEFT JOIN hello_blog_tags tags ON postsTags.tags_id = tags.id
+        LEFT JOIN hello_blog_category category ON category.id=posts.category_id
+        <where>
+            <if test="condition.archiveDate != null">
+                BETWEEN DATE_FORMAT( condition.archiveDate, "%Y-%m-01 00:00:00") AND DATE_FORMAT(condition.archiveDate, "%Y-%m-01 59:59:59" )
+            </if>
+            <if test="condition.createTime != null">
+                AND posts.create_time = #{condition.createTime}
+            </if>
+            <if test="condition.keywords != null and condition.keywords != ''">
+                AND (posts.title LIKE #{condition.keywords} OR posts.summary LIKE #{condition.keywords})
+            </if>
+            <if test="condition.tagsName != null and condition.tagsName != ''">
+                AND tags.name = #{condition.tagsName}
+            </if>
+            <if test="condition.categoryId != null and condition.categoryId != ''">
+                AND posts.category_id  = #{condition.categoryId}
+            </if>
+            <if test="condition.postsTagsId != null and condition.postsTagsId != ''">
+                AND postsTags.tags_id = #{condition.postsTagsId}
+            </if>
+            <if test="condition.title != null and condition.title != ''">
+                AND posts.title LIKE #{condition.title}
+            </if>
+            <if test="condition.isPublishByteBlogs != null and condition.isPublishByteBlogs != ''">
+                AND posts.sync_status = #{condition.isPublishByteBlogs}
+            </if>
+            <if test="condition.status != null and condition.status != ''">
+                AND posts.status = #{condition.status}
+            </if>
+        </where>
+        <choose>
+            <when test="condition.isWeight != null and condition.isWeight == 1" >
+                ORDER BY posts.weight DESC
+            </when>
+            <otherwise>
+                ORDER BY posts.id DESC
+            </otherwise>
+        </choose>
+    </select>
+
+    <select id="selectArchiveGroupYearList" resultType="com.inyaa.posts.domain.vo.PostsVO">
+        SELECT
+          id,
+          title,
+          create_time createTime,
+          DATE_FORMAT( create_time, "%Y" ) `year`
+        FROM
+          hello_blog_posts
+        ORDER BY
+          DATE_FORMAT( create_time, "%Y" ) DESC
+    </select>
+
+    <select id="selectPostsTotal" resultType="com.inyaa.posts.domain.vo.PostsVO">
+    SELECT
+      SUM(comments) commentsTotal,
+      SUM(views) viewsTotal
+    FROM
+      hello_blog_posts posts
+    </select>
+
+    <select id="selectArchiveTotalGroupDateList" resultType="com.inyaa.posts.domain.vo.PostsVO">
+      SELECT
+     	DATE_FORMAT( create_time, "%Y-%m-01 00:00:00" ) archiveDate,
+        COUNT(*) articleTotal
+      FROM
+        hello_blog_posts
+      GROUP BY DATE_FORMAT( create_time, "%Y-%m-01 00:00:00" )
+      ORDER BY id DESC
+    </select>
+    <select id="selectOneById" resultType="com.inyaa.posts.domain.po.Posts">
+        SELECT
+            posts.`id`,
+            posts.`author_id`,
+            posts.`title`,
+            posts.`thumbnail`,
+            posts.`comments`,
+            posts.`is_comment`,
+            posts.`sync_status`,
+            posts.`status`,
+            posts.`summary`,
+            posts.`views`,
+            posts.`weight`,
+            posts.`category_id`,
+            category.name as categoryName,
+            posts.`create_time`,
+            posts.`update_time`
+        FROM hello_blog_posts as posts
+        LEFT JOIN hello_blog_category as category ON category.id=posts.category_id
+        WHERE posts.id=#{id}
+    </select>
+    <select id="selectByArchiveDate" resultType="com.inyaa.posts.domain.vo.PostsVO">
+        SELECT <include refid="BASE_SQL"/>
+        FROM hello_blog_posts
+        WHERE DATE_FORMAT( create_time,"%Y-%m-01 00:00:00")= DATE_FORMAT(#{archiveDate}, "%Y-%m-01 00:00:00" )
+    </select>
+
+    <select id="selectHotPostsList" resultType="com.inyaa.posts.domain.vo.PostsVO">
+
+    </select>
+
+    <update id="incrementView">
+       UPDATE hello_blog_posts SET views = views + 1 WHERE id = #{id}
+    </update>
+
+    <update id="incrementComments">
+       UPDATE hello_blog_posts SET comments = comments + 1 WHERE id = #{id}
+    </update>
+</mapper>

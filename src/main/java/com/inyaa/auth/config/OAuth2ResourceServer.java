@@ -56,10 +56,10 @@ public class OAuth2ResourceServer extends ResourceServerConfigurerAdapter {
                 .authorizeRequests()
                 //我们指定任何用户都可以访问多个URL的模式。
                 //任何用户都可以访问以"/actuator/**"开头的URL。
-                .antMatchers("/actuator/**").permitAll()
+                .antMatchers("/**").permitAll()
                 //以 "/admin/" 开头的URL只能让拥有 "ROLE_ADMIN"角色的用户访问。
                 //请注意我们使用 hasRole 方法，没有使用 "ROLE_" 前缀。
-                //.antMatchers("/admin/**").hasRole("ADMIN")
+                //.antMatchers("/**/add", "/**/update", "/**/save").hasRole("ADMIN")
 
                 //任何以"/db/" 开头的URL需要同时具有 "ROLE_ADMIN" 和 "ROLE_DBA"权限的用户才可以访问。
                 //和上面一样我们的 hasRole 方法也没有使用 "ROLE_" 前缀。

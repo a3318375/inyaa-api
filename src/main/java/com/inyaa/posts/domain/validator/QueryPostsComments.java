@@ -1,0 +1,12 @@
+package com.inyaa.posts.domain.validator;
+
+import com.inyaa.common.validator.group.Update;
+
+import javax.validation.GroupSequence;
+
+/**
+ * @author: inyaa
+ * @date: 2019/9/30 19:13
+ */
+public interface QueryPostsComments {
+}

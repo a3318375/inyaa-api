@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.inyaa.auth.dao.AuthUserSocialDao">
+	<!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        id,code,content,show_type as showType,remark,icon,is_enabled as isEnabled,is_home as isHome,create_time as createTime,update_time as updateTime
+    </sql>
+
+
+    <resultMap id="BaseResultMap" type="com.inyaa.auth.domain.po.AuthUserSocial">
+		<id column="id" property="id" />
+		<result column="code" property="code" />
+		<result column="content" property="content" />
+		<result column="show_type" property="showType" />
+		<result column="remark" property="remark" />
+		<result column="icon" property="icon" />
+		<result column="is_enabled" property="isEnabled" />
+		<result column="is_home" property="isHome" />
+		<result column="create_time" property="createTime" />
+		<result column="update_time" property="updateTime" />
+    </resultMap>
+
+	<select id="selectSocialList" resultType="com.inyaa.auth.domain.vo.AuthUserSocialVO">
+		SELECT <include refid="Base_Column_List"/> FROM hello_blog_auth_user_social
+		<where>
+			<if test="condition.code != null and condition.code != ''"> AND code=#{condition.code}</if>
+			<if test="condition.content != null and condition.content != ''"> AND content=#{condition.content}</if>
+			<if test="condition.showType != null "> AND show_type=#{condition.showType}</if>
+			<if test="condition.remark != null and condition.remark != ''"> AND remark=#{condition.remark}</if>
+			<if test="condition.isEnabled != null"> AND is_enabled=#{condition.isEnabled}</if>
+			<if test="condition.isHome != null "> AND is_home=#{condition.isHome}</if>
+			<if test="condition.keywords != null and condition.keywords != ''"> AND code LIKE #{condition.keywords}</if>
+		</where>
+		ORDER BY id DESC
+	</select>
+
+</mapper>

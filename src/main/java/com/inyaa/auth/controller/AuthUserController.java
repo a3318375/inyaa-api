@@ -1,33 +1,35 @@
 package com.inyaa.auth.controller;
 
 import com.inyaa.auth.bean.UserInfo;
-import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import com.inyaa.common.annotation.LoginRequired;
+import com.inyaa.common.base.domain.Result;
+import com.inyaa.auth.domain.vo.AuthUserVO;
+import com.inyaa.auth.service.AuthUserService;
+import org.springframework.web.bind.annotation.*;
 
+import javax.annotation.Resource;
 import java.security.Principal;
 
+/**
+ * @author inyaa
+ * @since 2019-08-28
+ */
 @RestController
 @RequestMapping("/auth")
 public class AuthUserController {
 
-    @GetMapping("/sayHello")
-    public String sayHello(String name) {
-        return "Hello, " + name;
+    @Resource
+    private AuthUserService authUserService;
+
+    @GetMapping("/user/v1/get")
+    public Result<UserInfo> getUserInfo(Principal principal) {
+        return authUserService.getUserInfo(principal.getName());
     }
 
-    @PreAuthorize("hasAnyRole('ADMIN')")
-    @RequestMapping("/sayHi")
-    public String sayHi() {
-        return "hahaha";
-    }
-
-    @RequestMapping("/userInfo")
-    public UserInfo userInfo(Principal principal) {
-        UserInfo userInfo = new UserInfo();
-        userInfo.setName(principal.getName());
-        return userInfo;
+    @LoginRequired
+    @GetMapping("/user/v1/list")
+    public Result<UserInfo> getUserList(AuthUserVO authUserVO) {
+        return authUserService.getUserList(authUserVO);
     }
 
 }
